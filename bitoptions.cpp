@@ -1,15 +1,13 @@
 #include "bitoptions.h"
-#include "QGridLayout"
+#include <QGridLayout>
 #define	HEIGHT 130
 #define	WIDTH_S 60
-#define	WIDTH_L	140
 bitOptions::bitOptions(QWidget *parent, Bits * bits) : QWidget(parent)
 {
     this->bits = bits;
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->setSpacing(0);
     this->setFixedHeight(HEIGHT);
-    this->setFixedWidth(WIDTH_S);
     btn_8 = new QRadioButton("8");
     btn_16 = new QRadioButton("16");
     btn_32 = new QRadioButton("32");
@@ -32,7 +30,7 @@ bitOptions::bitOptions(QWidget *parent, Bits * bits) : QWidget(parent)
     connect(btn_16,SIGNAL(toggled(bool)),this,SLOT(change_width()));
     connect(btn_32,SIGNAL(toggled(bool)),this,SLOT(change_width()));
     connect(btn_64,SIGNAL(toggled(bool)),this,SLOT(change_width()));
-    connect(ckbox_always_on_top,SIGNAL(stateChanged(int)),this,SLOT(set_alway_on_top(int)));
+    connect(this->ckbox_always_on_top,SIGNAL(stateChanged(int)),this,SLOT(set_alway_on_top(int)));
     connect(bits,SIGNAL(value_changed()),this,SLOT(update_display()));
 }
 
@@ -69,13 +67,15 @@ void bitOptions::update_display(){
 
 }
 
-void bitOptions::set_alway_on_top(int){
+void bitOptions::set_alway_on_top(int cke_state){
 #ifdef Q_OS_WIN
     if (cke_state==Qt::Unchecked){
-        SetWindowPos((HWND)winId(),HWND_NOTOPMOST,pos().x(),pos().y(),width(),height(),SWP_SHOWWINDOW);
+        SetWindowPos((HWND)this->parentWidget()->winId(),HWND_NOTOPMOST,this->parentWidget()->pos().x(),\
+                     this->parentWidget()->pos().y(),this->parentWidget()->width(),this->parentWidget()->height(),SWP_SHOWWINDOW);
     }
     else{
-        SetWindowPos((HWND)winId(),HWND_TOPMOST,pos().x(),pos().y(),width(),height(),SWP_SHOWWINDOW);
+        SetWindowPos((HWND)this->parentWidget()->winId(),HWND_TOPMOST,this->parentWidget()->pos().x(),\
+                     this->parentWidget()->pos().y(),this->parentWidget()->width(),this->parentWidget()->height(),SWP_SHOWWINDOW);
     }
 #endif
 }

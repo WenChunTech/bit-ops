@@ -320,7 +320,7 @@ bool Bits::set_dec_unsigned_string(string input_str){
 
 bool Bits::set_dec_signed_string(string input_str){
     if (is_dec_signed_format(input_str)){
-        this->set_data(std::stoull(input_str,nullptr,10));
+        this->set_data(std::stoll(input_str,nullptr,10));
         return true;
     }
     return false;

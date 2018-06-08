@@ -11,20 +11,21 @@ BitLineEdit::BitLineEdit(QWidget *parent, Bits *bits, Bits::STR_TYPE type):QLine
 }
 
 void BitLineEdit::update_display(){
-    Bits tmp_bits(bits->get_width());
-    tmp_bits.set_string(this->text().toStdString(),type);
+    Bits tmp_bits(BIT_MAX_LENGTH);
+    tmp_bits.set_string(this->text().trimmed().toStdString(),type);
     if (tmp_bits.get_data() != bits->get_data()){			//	need to update?
         this->setText(bits->get_string(type).c_str());
     }
     this->string_format_error(false);
 }
+
 void BitLineEdit::finish_edit(){
     // update other viewers' display
     bits->broadcast_value_changed();
 }
 
 void BitLineEdit::text_changed(QString input_str){
-    string_format_error(!bits->set_string(input_str.toStdString(),type));
+    string_format_error(!bits->set_string(input_str.trimmed().toStdString(),type));
 }
 
 void BitLineEdit::string_format_error(bool is_error){
