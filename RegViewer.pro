@@ -33,7 +33,8 @@ SOURCES += \
     bitlineedit.cpp \
     bitlineedits.cpp \
     bitoperate.cpp \
-    bitoptions.cpp
+    bitoptions.cpp \
+    common.cpp
 
 HEADERS += \
     bits.h \
@@ -43,4 +44,23 @@ HEADERS += \
     bitlineedit.h \
     bitlineedits.h \
     bitoperate.h \
-    bitoptions.h
+    bitoptions.h \
+    include/containers.h \
+    include/functions.h \
+    include/packToken.h \
+    include/shunting-yard.h \
+    include/shunting-yard-exceptions.h \
+    common.h
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/release/ -lcparse
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/debug/ -lcparse
+else:unix: LIBS += -L$$PWD/lib/ -lcparse
+
+INCLUDEPATH += $$PWD/include
+DEPENDPATH += $$PWD/include
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/release/libcparse.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/debug/libcparse.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/release/cparse.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/debug/cparse.lib
+else:unix: PRE_TARGETDEPS += $$PWD/lib/libcparse.a

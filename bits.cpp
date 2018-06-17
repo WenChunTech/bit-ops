@@ -249,7 +249,6 @@ bool Bits::is_oct_format(string input_str){
     unsigned int max_len;
     bool format_ok;
     uint64_t value, max_value;
-    std::stringstream ss;
     max_len = (this->width+2)/3;
     max_value = this->bit_mask.to_ullong();
     std::string pattern("^0*[0-7]{1,"+ std::to_string(max_len) +"}$");

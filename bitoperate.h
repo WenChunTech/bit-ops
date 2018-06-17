@@ -34,12 +34,14 @@ private:
     QLineEdit 	* bit_range_from;
     QLineEdit 	* bit_range_to;
     QPushButton * btn_shift_right;
-    QComboBox * shift_mode;
+    QComboBox 	* shift_mode;
+    QLineEdit   * txt_cmd;
 int get_range_start();
 int get_range_end();
 
 private slots:
     void update_display();
+    void send_cmd();
     void set_shift_mode(QString mode);
 };
 

@@ -9,6 +9,10 @@
 #include <QLabel>
 #include <algorithm>
 #include <QMessageBox>
+#include "shunting-yard.h"
+#include <sstream>
+#include <common.h>
+#include <QDebug>
 
 BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
 {
@@ -23,10 +27,12 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     btn_clear = new QPushButton("clear", this);
     btn_set = new QPushButton("set", this);
     btn_reverse = new QPushButton("reverse", this);
-    btn_shift_left = new QPushButton("<<shift",this);
+    btn_shift_left = new QPushButton("<<",this);
     txt_shift_bit_num = new QLineEdit("0",this);
-    btn_shift_right = new QPushButton("shift>>",this);
+    btn_shift_right = new QPushButton(">>",this);
     shift_mode = new QComboBox(this);
+    txt_cmd = new QLineEdit("x",this);
+    txt_cmd->setToolTip("execuate a expression, 'x' for current value, 'Enter' to excuate.");
 
     shift_mode->setToolTip("Shift Mode");
     shift_mode->addItem("Logic");
@@ -58,7 +64,7 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     shiftLayout->setSpacing(0);
     shiftLayout->setMargin(1);
     shiftWidget->setLayout(shiftLayout);
-    shiftWidget->setFixedWidth(200);
+    shiftWidget->setFixedWidth(100);
 
     mainLayout->addWidget(label_from);
     mainLayout->addWidget(bit_range_from);
@@ -71,6 +77,7 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     mainLayout->addSpacing(10);
     mainLayout->addWidget(shiftWidget);
     mainLayout->addWidget(shift_mode);
+    mainLayout->addWidget(txt_cmd);
     this->setLayout(mainLayout);
     txt_shift_bit_num->setText("1");
 //    btn_clear->setFocusPolicy(Qt::NoFocus);
@@ -85,6 +92,7 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     connect(btn_set,SIGNAL(clicked(bool)),this,SLOT(set_num()));
     connect(btn_shift_left,SIGNAL(clicked(bool)),this,SLOT(shift_left()));
     connect(btn_shift_right,SIGNAL(clicked(bool)),this,SLOT(shift_right()));
+    connect(txt_cmd,SIGNAL(returnPressed()),this,SLOT(send_cmd()));
     connect(bits,SIGNAL(value_changed()),this,SLOT(update_display()));
 }
 
@@ -168,6 +176,29 @@ void BitOperate::update_display(){
             shift_mode->setCurrentText("Rotate");
             break;
     }
+}
+
+void BitOperate::send_cmd(){
+    QString cmd = txt_cmd->text().trimmed();
+    if (cmd.size()==0){
+        return;
+    }
+    TokenMap vars;
+    vars["x"] = (long int)bits->get_data();
+    cmd = convert_hex_in_str(cmd);
+    qDebug() << "expression: " << cmd;
+    txt_cmd->setStyleSheet("");
+    try {
+        packToken my_token = calculator::calculate(cmd.toStdString().c_str(),&vars);
+        //tmp_str = (unsigned long long)my_token.asDouble();
+        qDebug() << (unsigned long long)my_token.asDouble();
+        qDebug() << my_token.asInt();
+        bits->set_data((unsigned long long)my_token.asInt());
+    } catch (...){
+        txt_cmd->setStyleSheet("QLineEdit { background-color: #FF8888 }");
+        qDebug() << "Expression Error!";
+    }
+
 }
 
 void BitOperate::set_shift_mode(QString mode){
