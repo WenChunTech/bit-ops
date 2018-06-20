@@ -5,7 +5,6 @@
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QSizePolicy>
-#include "flowlayout.h"
 #include <QLabel>
 #include <QList>
 #include "bits.h"
