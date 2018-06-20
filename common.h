@@ -7,5 +7,6 @@ class QString;
  *	e.g. "0x10+100" --> "16+100"
 */
 QString convert_hex_in_str(QString input_str);
+QString unfold_expression(QString input_str);
 
 #endif // COMMON_H

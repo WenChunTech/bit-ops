@@ -7,6 +7,8 @@
 #include "bitoperate.h"
 #include "bits.h"
 #include "bitoptions.h"
+#include "regdisplay.h"
+class QPushButton;
 
 class BitElement : public QWidget
 {
@@ -18,10 +20,13 @@ private:
     BitLineEdits * line_edits;
     BitOperate * bit_operate;
     bitOptions * bit_options;
-    Bits * bits = new Bits(16);
+    Bits * bits = new Bits(64);
+    QPushButton * btn_more;
+    RegDisplay * reg_display;
 signals:
 
 public slots:
+    void press_more_btn(bool);
 };
 
 #endif // BITELEMENT_H

@@ -25,7 +25,7 @@ void BitLineEdit::finish_edit(){
 }
 
 void BitLineEdit::text_changed(QString input_str){
-    string_format_error(!bits->set_string(input_str.trimmed().toStdString(),type));
+    string_format_error(!bits->set_string(input_str.trimmed().toUpper().toStdString(),type));
 }
 
 void BitLineEdit::string_format_error(bool is_error){

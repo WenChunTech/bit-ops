@@ -103,10 +103,21 @@ void Bits::set_all(){
     bit_data &= bit_mask;
     send_value_changed_signal();
 }
+
 void Bits::reverse_all(){
     bit_data.flip();
     bit_data &= bit_mask;
     send_value_changed_signal();
+}
+
+uint64_t Bits::get_sub_data(int start, int end){
+    unsigned int i;
+    bitset<BIT_MAX_LENGTH> tmp_data;
+    tmp_data = 0x0;
+    for (i = start; i<= end; i++){
+        tmp_data[i] = bit_data[i];
+    }
+    return tmp_data.to_ullong() >> start;
 }
 
 /**********************   shift operate *******************/

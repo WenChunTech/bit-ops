@@ -37,6 +37,7 @@ public:
     string get_bin_string();
     string get_addr_string();
     string get_string(Bits::STR_TYPE type);
+    uint64_t get_sub_data(int start, int end);
 
     /***************** data change functions *****************/
 

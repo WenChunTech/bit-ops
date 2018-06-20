@@ -34,7 +34,9 @@ SOURCES += \
     bitlineedits.cpp \
     bitoperate.cpp \
     bitoptions.cpp \
-    common.cpp
+    common.cpp \
+    reginfo.cpp \
+    regdisplay.cpp
 
 HEADERS += \
     bits.h \
@@ -50,7 +52,9 @@ HEADERS += \
     include/packToken.h \
     include/shunting-yard.h \
     include/shunting-yard-exceptions.h \
-    common.h
+    common.h \
+    regdisplay.h \
+    reginfo.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/release/ -lcparse
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/debug/ -lcparse

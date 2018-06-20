@@ -32,6 +32,9 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     btn_shift_right = new QPushButton(">>",this);
     shift_mode = new QComboBox(this);
     txt_cmd = new QLineEdit("x",this);
+    btn_clear->setFixedWidth(50);
+    btn_set->setFixedWidth(50);
+    btn_reverse->setFixedWidth(50);
     txt_cmd->setToolTip("execuate a expression, 'x' for current value, 'Enter' to excuate.");
 
     shift_mode->setToolTip("Shift Mode");
