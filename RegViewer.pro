@@ -36,7 +36,10 @@ SOURCES += \
     bitoptions.cpp \
     common.cpp \
     reginfo.cpp \
-    regdisplay.cpp
+    regdisplay.cpp \
+    aboutdialog.cpp \
+    varsdisplay.cpp \
+    lineeditfocus.cpp
 
 HEADERS += \
     bits.h \
@@ -54,7 +57,10 @@ HEADERS += \
     include/shunting-yard-exceptions.h \
     common.h \
     regdisplay.h \
-    reginfo.h
+    reginfo.h \
+    aboutdialog.h \
+    varsdisplay.h \
+    lineeditfocus.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/release/ -lcparse
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/debug/ -lcparse
@@ -68,3 +74,6 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/debug/l
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/release/cparse.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/debug/cparse.lib
 else:unix: PRE_TARGETDEPS += $$PWD/lib/libcparse.a
+
+FORMS += \
+    aboutdialog.ui

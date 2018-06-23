@@ -111,7 +111,7 @@ void Bits::reverse_all(){
 }
 
 uint64_t Bits::get_sub_data(int start, int end){
-    unsigned int i;
+    int i;
     bitset<BIT_MAX_LENGTH> tmp_data;
     tmp_data = 0x0;
     for (i = start; i<= end; i++){
@@ -214,8 +214,9 @@ unsigned int Bits::get_bit_count(){
 bool Bits::is_hex_format(string input_str){
     unsigned int max_len;
     max_len = this->width/4;
-    std::string pattern("^[0x]*0*[0-9a-fA-F]{1,"+ std::to_string(max_len) +"}$");
+    std::string pattern("^[0(x|X)]*0*[0-9a-fA-F]{1,"+ std::to_string(max_len) +"}$");
     std::regex re(pattern);
+    //qDebug() << "INPUT_STRING:" << QString::fromStdString(input_str);
     return std::regex_match(input_str, re);
 }
 

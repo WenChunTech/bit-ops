@@ -8,6 +8,7 @@ class QLineEdit;
 class QComboBox;
 class QLabel;
 #include "bits.h"
+#include "shunting-yard.h"
 
 class BitOperate : public QWidget
 {
@@ -29,19 +30,16 @@ private:
     QPushButton * btn_set;
     QPushButton * btn_shift_left;
     QLineEdit 	* txt_shift_bit_num;
-    QLabel		* label_from;
     QLabel		* label_to;
     QLineEdit 	* bit_range_from;
     QLineEdit 	* bit_range_to;
     QPushButton * btn_shift_right;
     QComboBox 	* shift_mode;
-    QLineEdit   * txt_cmd;
-int get_range_start();
-int get_range_end();
+    int get_range_start();
+    int get_range_end();
 
 private slots:
     void update_display();
-    void send_cmd();
     void set_shift_mode(QString mode);
 };
 

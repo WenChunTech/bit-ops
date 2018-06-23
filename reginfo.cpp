@@ -48,10 +48,7 @@ unsigned long long RegInfo::get_reg_value_by_addr(QString reg_addr){
 }
 
 /*
- *
  * (((d.l(spr:0x30400))&0x10)==0x10)&&(((d.q(spr:0x30017))&0xF0000)==0x10000)
- *
- *
  * */
 QString RegInfo::replace_reg_by_value(QString input_str){
     unsigned long long tmp_value;
@@ -108,6 +105,7 @@ FieldGroup RegInfo::get_right_field_group(){
             return field_groups[i];
         }
     }
+    return field_groups[0];
 }
 
 void RegInfo::clean(){
@@ -143,6 +141,8 @@ FieldInfo::FieldInfo(QJsonObject obj, Bits *bits)
     this->bits = bits;
     QString display_values = obj["display_value"].toString();
     this->display_value = display_values.split(',');
+    if (display_values.endsWith("?..."))
+        display_values.remove(display_values.size()-1);
     this->display_format = obj["display_format"].toString();
     this->end_bit = obj["end_bit"].toString().toInt();
     this->start_bit = obj["start_bit"].toString().toInt();
@@ -155,7 +155,12 @@ unsigned long long FieldInfo::get_field_data(){
 }
 
 QString FieldInfo::get_field_string(){
-    return display_value[this->get_field_data()];
+    unsigned long long field_value;
+    field_value = this->get_field_data();
+    if (field_value <(unsigned long long) display_value.size()){
+        return display_value[this->get_field_data()];
+    }
+    return QString("Reserved");
 }
 #define BASE_HEIGHT 0
 #define ITEM_HEIGHT 20

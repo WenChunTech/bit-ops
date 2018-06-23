@@ -8,7 +8,11 @@
 #include "bits.h"
 #include "bitoptions.h"
 #include "regdisplay.h"
+#include "varsdisplay.h"
+
 class QPushButton;
+class QLineEdit;
+class LineEditFocus;
 
 class BitElement : public QWidget
 {
@@ -19,14 +23,21 @@ private:
     Bitbuttons * bitbtns;
     BitLineEdits * line_edits;
     BitOperate * bit_operate;
-    bitOptions * bit_options;
+    BitOptions * bit_options;
     Bits * bits = new Bits(64);
     QPushButton * btn_more;
     RegDisplay * reg_display;
+    QLineEdit * txt_reg_name;
+    LineEditFocus   * txt_cmd;
+    VarsDisplay * vars_display;
+
 signals:
 
 public slots:
-    void press_more_btn(bool);
+    void txt_reg_changed(QString input_str);
+    void txt_cmd_get_focus();
+    void txt_cmd_lost_focus();
+    void send_cmd();
 };
 
 #endif // BITELEMENT_H

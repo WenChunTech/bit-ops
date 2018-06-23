@@ -12,8 +12,6 @@ QString convert_hex_in_str(QString input_str){
     QString output_str;
     QStringList output_list;
     int index,index_0x;
-    long long tmp_int;
-    bool ok;
     index = 0;
     input_str = input_str.toLower();
     index_0x = input_str.indexOf("0x");

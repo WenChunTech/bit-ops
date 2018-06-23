@@ -26,34 +26,33 @@ RegDisplay::RegDisplay(QWidget *parent, Bits *bits) : QWidget(parent)
     this->bits = bits;
 
     main_layout = new QGridLayout;
-    txt_reg_name = new QLineEdit("");
-    label_reg_name = new QLabel("Reg Name:");
     reg_info = new RegInfo(this,reg_data_obj, bits);
-    main_layout->addWidget(label_reg_name,	0,0,1,1);
-    main_layout->addWidget(txt_reg_name,	0,1,1,1);
-    main_layout->addWidget(reg_info,	1,0,1,2);
+    main_layout->addWidget(reg_info,0,0,1,1);
+    main_layout->setSpacing(0);
+    main_layout->setMargin(0);
     this->setLayout(main_layout);
-    connect(txt_reg_name,SIGNAL(textChanged(QString)),this,SLOT(txt_reg_name_changed(QString)));
+//    connect(txt_reg_name,SIGNAL(textChanged(QString)),this,SLOT(txt_reg_name_changed(QString)));
     connect(bits, SIGNAL(value_changed()),this,SLOT(update_display()));
 }
 
 void RegDisplay::update_display(){
     if (is_reg_name(this->cur_reg_name)){
         reg_info->update_display(cur_reg_name);
-        this->txt_reg_name->setStyleSheet("");
     }
     else{
         reg_info->clean_display();
-        this->txt_reg_name->setStyleSheet("QLineEdit { background-color: #FF8888 }");
     }
+}
+
+void RegDisplay::clear_display(){
+        reg_info->clean_display();
 }
 
 bool RegDisplay::is_reg_name(QString input_name){
     return	reg_data_obj.contains(input_name);
 }
 
-void RegDisplay::txt_reg_name_changed(QString reg_name){
-    this->cur_reg_name = reg_name.toUpper();
+void RegDisplay::set_reg_name(QString input_name){
+    this->cur_reg_name = input_name.toUpper();
     this->update_display();
 }
-

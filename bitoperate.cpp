@@ -9,42 +9,59 @@
 #include <QLabel>
 #include <algorithm>
 #include <QMessageBox>
-#include "shunting-yard.h"
 #include <sstream>
-#include <common.h>
 #include <QDebug>
+#include <QGroupBox>
 
 BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
 {
     this->bits = bits;
     QHBoxLayout *mainLayout = new QHBoxLayout;
-    QGridLayout *shiftLayout = new QGridLayout;
-    QWidget * shiftWidget = new QWidget;
-    label_from = new QLabel("From");
-    label_to = new QLabel("To");
+    mainLayout->setMargin(0);
+
+/*********** set *********************************/
+    QGroupBox * group_set =  new QGroupBox("Set Value");
+    QHBoxLayout * set_layout = new QHBoxLayout;
+    set_layout->setMargin(0);
+    set_layout->setSpacing(0);
+    group_set->setFixedWidth(140);
+    label_to = new QLabel("-");
     bit_range_from = new QLineEdit("0",this);
     bit_range_to = new QLineEdit("63",this);
-    btn_clear = new QPushButton("clear", this);
-    btn_set = new QPushButton("set", this);
-    btn_reverse = new QPushButton("reverse", this);
+    btn_clear = new QPushButton("0", this);
+    btn_set = new QPushButton("1", this);
+    btn_reverse = new QPushButton("~", this);
+    label_to->setFixedWidth(10);
+    label_to->setAlignment(Qt::AlignCenter);
+
+    QRegExp rx_dec("[0-9]+");
+    QValidator *dec_validator = new QRegExpValidator(rx_dec, this);
+    bit_range_to->setValidator(dec_validator);
+    bit_range_to->setMaxLength(2);
+    bit_range_to->setAlignment(Qt::AlignCenter);
+
+    set_layout->addWidget(bit_range_from);
+    set_layout->addWidget(label_to);
+    set_layout->addWidget(bit_range_to);
+    set_layout->addWidget(btn_clear);
+    set_layout->addWidget(btn_set);
+    set_layout->addWidget(btn_reverse);
+    group_set->setLayout(set_layout);
+
+/*********** shift ******************************/
+    QGroupBox * group_shift = new QGroupBox("Shift");
+    QHBoxLayout *shiftLayout = new QHBoxLayout;
+    shiftLayout->setSpacing(0);
+    shiftLayout->setMargin(0);
     btn_shift_left = new QPushButton("<<",this);
     txt_shift_bit_num = new QLineEdit("0",this);
     btn_shift_right = new QPushButton(">>",this);
     shift_mode = new QComboBox(this);
-    txt_cmd = new QLineEdit("x",this);
-    btn_clear->setFixedWidth(50);
-    btn_set->setFixedWidth(50);
-    btn_reverse->setFixedWidth(50);
-    txt_cmd->setToolTip("execuate a expression, 'x' for current value, 'Enter' to excuate.");
-
     shift_mode->setToolTip("Shift Mode");
     shift_mode->addItem("Logic");
     shift_mode->addItem("Arith");
     shift_mode->addItem("Rotate");
     shift_mode->setEditable(false);
-
-    QRegExp rx_dec("[0-9]+");
-    QValidator *dec_validator = new QRegExpValidator(rx_dec, this);
     txt_shift_bit_num->setValidator(dec_validator);
     txt_shift_bit_num->setMaxLength(2);
     txt_shift_bit_num->setAlignment(Qt::AlignCenter);
@@ -52,35 +69,20 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     bit_range_from->setMaxLength(2);
     bit_range_from->setAlignment(Qt::AlignCenter);
 
-    label_from->setFixedWidth(40);
-    label_to->setFixedWidth(20);
-    bit_range_from->setFixedWidth(40);
-    bit_range_to->setFixedWidth(40);
+    btn_shift_left->setFixedWidth(25);
+    txt_shift_bit_num->setFixedWidth(25);
+    btn_shift_right->setFixedWidth(25);
+    group_shift->setFixedWidth(140);
+    shiftLayout->addWidget(btn_shift_left);
+    shiftLayout->addWidget(txt_shift_bit_num);
+    shiftLayout->addWidget(btn_shift_right);
+    shiftLayout->addWidget(shift_mode);
+    group_shift->setLayout(shiftLayout);
 
-    bit_range_to->setValidator(dec_validator);
-    bit_range_to->setMaxLength(2);
-    bit_range_to->setAlignment(Qt::AlignCenter);
+/**************** cmd ****************************/
 
-    shiftLayout->addWidget(btn_shift_left,		0,0,1,1);
-    shiftLayout->addWidget(txt_shift_bit_num,	0,1,2,1);
-    shiftLayout->addWidget(btn_shift_right,		0,2,1,1);
-    shiftLayout->setSpacing(0);
-    shiftLayout->setMargin(1);
-    shiftWidget->setLayout(shiftLayout);
-    shiftWidget->setFixedWidth(100);
-
-    mainLayout->addWidget(label_from);
-    mainLayout->addWidget(bit_range_from);
-    mainLayout->addWidget(label_to);
-    mainLayout->addWidget(bit_range_to);
-    mainLayout->addSpacing(10);
-    mainLayout->addWidget(btn_clear);
-    mainLayout->addWidget(btn_set);
-    mainLayout->addWidget(btn_reverse);
-    mainLayout->addSpacing(10);
-    mainLayout->addWidget(shiftWidget);
-    mainLayout->addWidget(shift_mode);
-    mainLayout->addWidget(txt_cmd);
+    mainLayout->addWidget(group_set);
+    mainLayout->addWidget(group_shift);
     this->setLayout(mainLayout);
     txt_shift_bit_num->setText("1");
 //    btn_clear->setFocusPolicy(Qt::NoFocus);
@@ -95,7 +97,6 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     connect(btn_set,SIGNAL(clicked(bool)),this,SLOT(set_num()));
     connect(btn_shift_left,SIGNAL(clicked(bool)),this,SLOT(shift_left()));
     connect(btn_shift_right,SIGNAL(clicked(bool)),this,SLOT(shift_right()));
-    connect(txt_cmd,SIGNAL(returnPressed()),this,SLOT(send_cmd()));
     connect(bits,SIGNAL(value_changed()),this,SLOT(update_display()));
 }
 
@@ -179,29 +180,6 @@ void BitOperate::update_display(){
             shift_mode->setCurrentText("Rotate");
             break;
     }
-}
-
-void BitOperate::send_cmd(){
-    QString cmd = txt_cmd->text().trimmed();
-    if (cmd.size()==0){
-        return;
-    }
-    TokenMap vars;
-    vars["x"] = (long int)bits->get_data();
-    cmd = convert_hex_in_str(cmd);
-    qDebug() << "expression: " << cmd;
-    txt_cmd->setStyleSheet("");
-    try {
-        packToken my_token = calculator::calculate(cmd.toStdString().c_str(),&vars);
-        //tmp_str = (unsigned long long)my_token.asDouble();
-        qDebug() << (unsigned long long)my_token.asDouble();
-        qDebug() << my_token.asInt();
-        bits->set_data((unsigned long long)my_token.asInt());
-    } catch (...){
-        txt_cmd->setStyleSheet("QLineEdit { background-color: #FF8888 }");
-        qDebug() << "Expression Error!";
-    }
-
 }
 
 void BitOperate::set_shift_mode(QString mode){
