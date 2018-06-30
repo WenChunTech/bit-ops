@@ -18,20 +18,33 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     this->bits = bits;
     QHBoxLayout *mainLayout = new QHBoxLayout;
     mainLayout->setMargin(0);
+    mainLayout->setSpacing(0);
 
 /*********** set *********************************/
     QGroupBox * group_set =  new QGroupBox("Set Value");
     QHBoxLayout * set_layout = new QHBoxLayout;
     set_layout->setMargin(0);
     set_layout->setSpacing(0);
-    group_set->setFixedWidth(140);
+    group_set->setFixedWidth(170);
     label_to = new QLabel("-");
     bit_range_from = new QLineEdit("0",this);
     bit_range_to = new QLineEdit("63",this);
     btn_clear = new QPushButton("0", this);
     btn_set = new QPushButton("1", this);
     btn_reverse = new QPushButton("~", this);
+    btn_extract = new QPushButton("E",this);
+    btn_clear->setToolTip("<b>Clear</b> the bits in the range.");
+    btn_set->setToolTip("<b>Set</b> the bits in the range.");
+    btn_reverse->setToolTip("<b>Reverse</b> the bits in the range.");
+    btn_extract->setToolTip("<b>Extract</b> the bits in the range.");
     label_to->setFixedWidth(10);
+    bit_range_from->setAlignment(Qt::AlignCenter);
+    bit_range_from->setAlignment(Qt::AlignCenter);
+#ifdef Q_OS_WIN
+    bit_range_from->setFixedWidth(24);
+    bit_range_to->setFixedWidth(24);
+#endif
+
     label_to->setAlignment(Qt::AlignCenter);
 
     QRegExp rx_dec("[0-9]+");
@@ -46,6 +59,7 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     set_layout->addWidget(btn_clear);
     set_layout->addWidget(btn_set);
     set_layout->addWidget(btn_reverse);
+    set_layout->addWidget(btn_extract);
     group_set->setLayout(set_layout);
 
 /*********** shift ******************************/
@@ -95,6 +109,7 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     connect(btn_clear,SIGNAL(clicked(bool)),this,SLOT(clear_num()));
     connect(btn_reverse,SIGNAL(clicked(bool)),this,SLOT(reverse_num()));
     connect(btn_set,SIGNAL(clicked(bool)),this,SLOT(set_num()));
+    connect(btn_extract,SIGNAL(clicked(bool)),this,SLOT(extract_num()));
     connect(btn_shift_left,SIGNAL(clicked(bool)),this,SLOT(shift_left()));
     connect(btn_shift_right,SIGNAL(clicked(bool)),this,SLOT(shift_right()));
     connect(bits,SIGNAL(value_changed()),this,SLOT(update_display()));
@@ -155,6 +170,17 @@ void BitOperate::reverse_num(){
         return;
     }else{
         bits->reverse_bits(get_range_start(),get_range_end());
+    }
+}
+
+void BitOperate::extract_num(){
+    if ((get_range_end()==-1)||(get_range_start()==-1)){
+        QMessageBox msgBox;
+        msgBox.setText("Please check the range!");
+        msgBox.exec();
+        return;
+    }else{
+        bits->set_data(bits->get_sub_data(get_range_start(),get_range_end()));
     }
 }
 

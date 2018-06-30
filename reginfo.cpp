@@ -47,22 +47,73 @@ unsigned long long RegInfo::get_reg_value_by_addr(QString reg_addr){
         return 0;
 }
 
+bool reg_addr_has_offset(QString input_str){
+    if (input_str.contains("spr:(")){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+/*
+ * from:
+ *     (((d.q(spr:(0x34CC0+0x1)))&0x2000000000000000)==0x00)
+ * to:
+ * 	   (((d.q(spr:0x34CC1))&0x2000000000000000)==0x00)
+ * */
+QString calc_reg_addr_in_cond(QString input_str){
+    QString left_str,target_str,right_str;
+    TokenMap vars;
+    packToken my_token;
+    int start_index, end_index;
+    while(input_str.contains("spr:(")){
+        start_index = input_str.indexOf("spr:(")+4;
+        end_index = input_str.indexOf(")",start_index)+1;
+        left_str = input_str.left(start_index);
+        target_str = input_str.mid(start_index, end_index-start_index);
+        right_str = input_str.right(input_str.size()-end_index);
+        target_str = convert_hex_in_str(target_str);
+        qDebug() << "left_str:   " << left_str;
+        qDebug() << "target_str: " << target_str;
+        qDebug() << "right_str:  " << right_str;
+        qDebug() << "calculate addr:" << target_str;
+        my_token = calculator::calculate(\
+                    target_str.toStdString().c_str(),&vars);
+        target_str = "0x"+QString::number(my_token.asInt(),16);
+        qDebug() << "left_str:   " << left_str;
+        qDebug() << "target_str: " << target_str;
+        qDebug() << "right_str:  " << right_str;
+        qDebug() << "calculate addr:" << target_str;
+        input_str = left_str + target_str + right_str;
+    }
+    qDebug() << "output:" << input_str;
+    return input_str;
+}
+
 /*
  * (((d.l(spr:0x30400))&0x10)==0x10)&&(((d.q(spr:0x30017))&0xF0000)==0x10000)
  * */
 QString RegInfo::replace_reg_by_value(QString input_str){
     unsigned long long tmp_value;
-    QString result = input_str;
+    QString result;
     QString value_string;
+    //QString pattern_1("spr:(0x[0-9a-fA-F]+)");
     QString pattern_1("spr:(0x[0-9a-fA-F]+)");
     QString pattern_2;
     QStringList reg_addr_list;
     QRegExp rx(pattern_1);
+
+    if (reg_addr_has_offset(input_str)){
+        input_str = calc_reg_addr_in_cond(input_str);
+    }
+    qDebug() << "input condition:" << input_str;
     int pos = 0;
     while ((pos = rx.indexIn(input_str, pos)) != -1){
         reg_addr_list << rx.cap(1);
         pos += rx.matchedLength();
     }
+
+    result = input_str;
     //qDebug() <<"Addr List:"<< reg_addr_list;
     for (int i=0; i<reg_addr_list.size() ; i++){
         tmp_value = get_reg_value_by_addr(reg_addr_list[i]);
@@ -71,6 +122,7 @@ QString RegInfo::replace_reg_by_value(QString input_str){
         //qDebug() << pattern_2;
         result.replace(QRegExp(pattern_2), value_string);
     }
+    qDebug() << "replace reg value" << result;
     return result;
 }
 
@@ -109,7 +161,7 @@ FieldGroup RegInfo::get_right_field_group(){
 }
 
 void RegInfo::clean(){
-    this->label_head->setHidden(true);
+    this->setHidden(true);
     if (!widget_field_list.isEmpty()){
         for (int i=0; i< widget_field_list.size(); i++){
             QList<QWidget *> widgets = widget_field_list[i]->findChildren<QWidget *>();
@@ -157,15 +209,20 @@ unsigned long long FieldInfo::get_field_data(){
 QString FieldInfo::get_field_string(){
     unsigned long long field_value;
     field_value = this->get_field_data();
-    if (field_value <(unsigned long long) display_value.size()){
-        return display_value[this->get_field_data()];
+    if (this->display_format != ""){
+        return QString::number(field_value,16);
     }
-    return QString("Reserved");
+    else if (field_value < (unsigned long long) display_value.size()){
+        return display_value[field_value];
+    }
+    else{
+        return QString("Reserved");
+    }
 }
-#define BASE_HEIGHT 0
+#define BASE_HEIGHT 20
 #define ITEM_HEIGHT 20
 int calc_height(int item_num){
-    return BASE_HEIGHT+(item_num/2+3)*ITEM_HEIGHT;
+    return BASE_HEIGHT+((item_num-1)/2+1)*ITEM_HEIGHT;
 }
 void RegInfo::update_display(QString reg_name){
     clean();
@@ -173,21 +230,27 @@ void RegInfo::update_display(QString reg_name){
     build();
 //  qDebug() << calc_height(widget_field_list.size());
     this->setFixedHeight(calc_height(widget_field_list.size()));
+    ((QWidget *)(this->parent()))->adjustSize();
 }
 
 void RegInfo::clean_display(){
-    this->setFixedHeight(BASE_HEIGHT);
+    this->setFixedHeight(0);
     clean();
+    ((QWidget *)(this->parent()))->adjustSize();
 }
-
+/*
+ *
+ * */
 void RegInfo::build(){
     label_head->setText("<b>Full Name: </b>" + this->full_name + "&nbsp;&nbsp;&nbsp;&nbsp;" + "<b>Address: </b>" + this->address.mid(2));
+    label_head->setFixedHeight(ITEM_HEIGHT);
     mainLayout->addWidget(label_head, 0, 0, 1, 2);
-    this->label_head->setHidden(false);
-//  qDebug() << "add reg full name Label!";
+    this->setHidden(false);
+//  qDebug() << "add reg full： name Label!";
     FieldGroup right_field_group = get_right_field_group();
     widget_field_list.append(right_field_group.build());
     mainLayout->setSpacing(0);
+    mainLayout->setMargin(0);
     for (int i=0; i< widget_field_list.size(); i++){
         mainLayout->addWidget(widget_field_list[i],i/2+1,i%2,1,1);
     }
@@ -211,7 +274,7 @@ QWidget * FieldInfo::build(){
     QLabel * label_value = new QLabel();
     label_field_name->setToolTip("<b>" + this->field_name + "</b>" + ": " +this->field_full_name);
     label_field_name->setFixedWidth(50);
-    label_bit_info->setFixedWidth(50);
+    label_bit_info->setFixedWidth(60);
 
     label_value->setText(get_field_string());
     main_layout->addWidget(label_field_name);

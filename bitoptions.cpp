@@ -3,7 +3,7 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 #define	HEIGHT 130
-#define	WIDTH_S 50
+#define	WIDTH_S 60
 BitOptions::BitOptions(QWidget *parent, Bits * bits) : QWidget(parent)
 {
     this->bits = bits;
@@ -13,7 +13,7 @@ BitOptions::BitOptions(QWidget *parent, Bits * bits) : QWidget(parent)
     group_layout->setSpacing(0);
     main_layout->setMargin(0);
     main_layout->setSpacing(0);
-    QGroupBox * group_option = new QGroupBox("option",this);
+    QGroupBox * group_option = new QGroupBox("Option",this);
     group_layout->setSpacing(0);
     this->setFixedHeight(HEIGHT);
     this->setFixedWidth(WIDTH_S);
@@ -36,6 +36,7 @@ BitOptions::BitOptions(QWidget *parent, Bits * bits) : QWidget(parent)
     btn_32->setFocusPolicy(Qt::NoFocus);
     btn_64->setFocusPolicy(Qt::NoFocus);
     ckbox_always_on_top->setFocusPolicy(Qt::NoFocus);
+    ckbox_always_on_top->setToolTip("keep this window <b>Always on Top</b>");
     main_layout->addWidget(group_option);
     group_option->setLayout(group_layout);
     this->setLayout(main_layout);

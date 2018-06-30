@@ -62,18 +62,15 @@ HEADERS += \
     varsdisplay.h \
     lineeditfocus.h
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/release/ -lcparse
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/debug/ -lcparse
-else:unix: LIBS += -L$$PWD/lib/ -lcparse
+FORMS += \
+    aboutdialog.ui
+
+
+
+win32: LIBS += -L$$PWD/lib/ -lcparse
 
 INCLUDEPATH += $$PWD/include
 DEPENDPATH += $$PWD/include
 
-win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/release/libcparse.a
-else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/debug/libcparse.a
-else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/lib/release/cparse.lib
-else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/lib/debug/cparse.lib
-else:unix: PRE_TARGETDEPS += $$PWD/lib/libcparse.a
-
-FORMS += \
-    aboutdialog.ui
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/lib/cparse.lib
+else:win32-g++: PRE_TARGETDEPS += $$PWD/lib/libcparse.a

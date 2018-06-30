@@ -22,14 +22,14 @@ class packToken {
 
   template<class C>
   packToken(C c, tokType type) : base(new Token<C>(c, type)) {}
-  packToken(int i) : base(new Token<int64_t>(i, INT)) {}
-  packToken(int64_t l) : base(new Token<int64_t>(l, INT)) {}
-  packToken(bool b) : base(new Token<uint8_t>(b, BOOL)) {}
-  packToken(size_t s) : base(new Token<int64_t>(s, INT)) {}
-  packToken(float f) : base(new Token<double>(f, REAL)) {}
-  packToken(double d) : base(new Token<double>(d, REAL)) {}
-  packToken(const char* s) : base(new Token<std::string>(s, STR)) {}
-  packToken(const std::string& s) : base(new Token<std::string>(s, STR)) {}
+  packToken(int i) : base(new Token<int64_t>(i, CPARSE_INT)) {}
+  packToken(int64_t l) : base(new Token<int64_t>(l, CPARSE_INT)) {}
+  packToken(bool b) : base(new Token<uint8_t>(b, CPARSE_BOOL)) {}
+  packToken(size_t s) : base(new Token<int64_t>(s, CPARSE_INT)) {}
+  packToken(float f) : base(new Token<double>(f, CPARSE_REAL)) {}
+  packToken(double d) : base(new Token<double>(d, CPARSE_REAL)) {}
+  packToken(const char* s) : base(new Token<std::string>(s, CPARSE_STR)) {}
+  packToken(const std::string& s) : base(new Token<std::string>(s, CPARSE_STR)) {}
   packToken(const TokenMap& map);
   packToken(const TokenList& list);
   ~packToken() { delete base; }

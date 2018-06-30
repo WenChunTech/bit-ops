@@ -30,8 +30,6 @@ private:
 signals:
 
 public slots:
-
-private slots:
     void update_display();
 
 };

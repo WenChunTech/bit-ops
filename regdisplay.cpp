@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QScrollArea>
 #include <QPalette>
+#include <QFile>
 
 RegDisplay::RegDisplay(QWidget *parent, Bits *bits) : QWidget(parent)
 {
@@ -42,10 +43,13 @@ void RegDisplay::update_display(){
     else{
         reg_info->clean_display();
     }
+    ((QWidget *)(this->parent()))->adjustSize();
 }
 
 void RegDisplay::clear_display(){
-        reg_info->clean_display();
+    reg_info->clean_display();
+    this->cur_reg_name = "";
+    ((QWidget *)(this->parent()))->adjustSize();
 }
 
 bool RegDisplay::is_reg_name(QString input_name){

@@ -39,14 +39,19 @@ BitElement::BitElement(QWidget *parent) : QWidget(parent)
     mainLayout->addWidget(bitbtns,		0,0,1,3);
     mainLayout->addWidget(line_edits,	0,3,2,1);
     mainLayout->addWidget(bit_options,	0,4,2,1);
+    //---------------------------------------------
     mainLayout->addWidget(bit_operate,	1,0,1,1);
     mainLayout->addWidget(group_cmd,	1,1,1,1);
     mainLayout->addWidget(group_reg,	1,2,1,1);
+    //---------------------------------------------
     mainLayout->addWidget(vars_display,	2,0,1,4);
     mainLayout->addWidget(reg_display,	3,0,1,4);
     vars_display->setHidden(true);
 
     this->setLayout(mainLayout);
+    bit_operate->setFixedHeight(50);
+    group_cmd->setFixedHeight(50);
+    group_reg->setFixedHeight(50);
     connect(txt_reg_name, SIGNAL(textChanged(QString)),this,SLOT(txt_reg_changed(QString)));
     connect(txt_cmd,SIGNAL(returnPressed()),this,SLOT(send_cmd()));
     connect(txt_cmd,SIGNAL(getFocus()),this,SLOT(txt_cmd_get_focus()));
@@ -54,7 +59,7 @@ BitElement::BitElement(QWidget *parent) : QWidget(parent)
 }
 
 void BitElement::txt_reg_changed(QString input_str){
-    QString name_str = input_str.trimmed();
+    QString name_str = input_str.trimmed().toUpper();
     if (name_str == ""){
         this->txt_reg_name->setStyleSheet("");
         return;
@@ -62,6 +67,7 @@ void BitElement::txt_reg_changed(QString input_str){
     bool is_reg_name = reg_display->is_reg_name(name_str);
     if (is_reg_name){
         reg_display->set_reg_name(name_str);
+        reg_display->update_display();
         this->txt_reg_name->setStyleSheet("");
     }
     else{
@@ -117,4 +123,5 @@ void BitElement::txt_cmd_get_focus(){
 void BitElement::txt_cmd_lost_focus(){
     vars_display->setHidden(true);
     txt_cmd->setStyleSheet("");
+    this->adjustSize();
 }

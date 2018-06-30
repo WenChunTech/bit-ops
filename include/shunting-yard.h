@@ -23,30 +23,30 @@ typedef uint8_t tokType_t;
 typedef uint64_t opID_t;
 enum tokType {
   // Internal types:
-  NONE, OP, UNARY, VAR,
+  CPARSE_NONE, CPARSE_OP, CPARSE_UNARY, CPARSE_VAR,
 
   // Base types:
   // Note: The mask system accepts at most 29 (32-3) different base types.
-  STR, FUNC,
+  CPARSE_STR, CPARSE_FUNC,
 
   // Numerals:
-  NUM = 0x20,   // Everything with the bit 0x20 set is a number.
-  REAL = 0x21,  // == 0x20 + 0x1 => Real numbers.
-  INT = 0x22,   // == 0x20 + 0x2 => Integral numbers.
-  BOOL = 0x23,  // == 0x20 + 0x3 => Boolean Type.
+  CPARSE_NUM = 0x20,   // Everything with the bit 0x20 set is a number.
+  CPARSE_REAL = 0x21,  // == 0x20 + 0x1 => Real numbers.
+  CPARSE_INT = 0x22,   // == 0x20 + 0x2 => Integral numbers.
+  CPARSE_BOOL = 0x23,  // == 0x20 + 0x3 => Boolean Type.
 
   // Complex types:
-  IT = 0x40,      // Everything with the bit 0x40 set are iterators.
-  LIST = 0x41,    // == 0x40 + 0x01 => Lists are iterators.
-  TUPLE = 0x42,   // == 0x40 + 0x02 => Tuples are iterators.
-  STUPLE = 0x43,  // == 0x40 + 0x03 => ArgTuples are iterators.
-  MAP = 0x44,     // == 0x40 + 0x04 => Maps are Iterators
+  CPARSE_IT = 0x40,      // Everything with the bit 0x40 set are iterators.
+  CPARSE_LIST = 0x41,    // == 0x40 + 0x01 => Lists are iterators.
+  CPARSE_TUPLE = 0x42,   // == 0x40 + 0x02 => Tuples are iterators.
+  CPARSE_STUPLE = 0x43,  // == 0x40 + 0x03 => ArgTuples are iterators.
+  CPARSE_MAP = 0x44,     // == 0x40 + 0x04 => Maps are Iterators
 
   // References are internal tokens used by the calculator:
-  REF = 0x80,
+  CPARSE_REF = 0x80,
 
   // Mask used when defining operations:
-  ANY_TYPE = 0xFF
+  CPARSE_ANY_TYPE = 0xFF
 };
 
 #define ANY_OP ""
@@ -71,14 +71,14 @@ template<class T> class Token : public TokenBase {
 };
 
 struct TokenNone : public TokenBase {
-  TokenNone() : TokenBase(NONE) {}
+  TokenNone() : TokenBase(CPARSE_NONE) {}
   virtual TokenBase* clone() const {
     return new TokenNone(*this);
   }
 };
 
 struct TokenUnary : public TokenBase {
-  TokenUnary() : TokenBase(UNARY) {}
+  TokenUnary() : TokenBase(CPARSE_UNARY) {}
   virtual TokenBase* clone() const {
     return new TokenUnary(*this);
   }
@@ -279,16 +279,16 @@ class RefToken : public TokenBase {
   packToken key;
   packToken origin;
   RefToken(packToken k, TokenBase* v, packToken m = packToken::None()) :
-    TokenBase(v->type | REF), original_value(v), key(k), origin(m) {}
+    TokenBase(v->type | CPARSE_REF), original_value(v), key(k), origin(m) {}
   RefToken(packToken k = packToken::None(), packToken v = packToken::None(), packToken m = packToken::None()) :
-    TokenBase(v->type | REF), original_value(v), key(k), origin(m) {}
+    TokenBase(v->type | CPARSE_REF), original_value(v), key(k), origin(m) {}
 
   TokenBase* resolve(TokenMap* localScope = 0) const {
     TokenBase* result = 0;
 
     // Local variables have no origin == NONE,
     // thus, require a localScope to be resolved:
-    if (origin->type == NONE && localScope) {
+    if (origin->type == CPARSE_NONE && localScope) {
       // Get the most recent value from the local scope:
       packToken* r_value = localScope->find(key.asString());
       if (r_value) {

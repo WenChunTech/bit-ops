@@ -20,6 +20,7 @@ public slots:
     void clear_num();
     void reverse_num();
     void set_num();
+    void extract_num();
     void shift_left();
     void shift_right();
 
@@ -28,6 +29,7 @@ private:
     QPushButton * btn_clear;
     QPushButton * btn_reverse;
     QPushButton * btn_set;
+    QPushButton * btn_extract;
     QPushButton * btn_shift_left;
     QLineEdit 	* txt_shift_bit_num;
     QLabel		* label_to;

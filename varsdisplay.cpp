@@ -69,10 +69,12 @@ void VarsDisplay::update_display(){
 }
 
 void VarsDisplay::clear_vars(){
+    int tmp_height = this->height();
     vars.map().clear();
     vars[DEFAULT_VAR] = (int64_t)bits->get_data();
     update_display();
     this->setHidden(true);
+    ((QWidget *)(this->parent()))->adjustSize();
 }
 
 int64_t VarsDisplay::get_data(){
