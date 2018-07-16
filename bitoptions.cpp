@@ -3,7 +3,7 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 #define	HEIGHT 130
-#define	WIDTH_S 60
+#define	WIDTH_S 50
 BitOptions::BitOptions(QWidget *parent, Bits * bits) : QWidget(parent)
 {
     this->bits = bits;

@@ -1,5 +1,6 @@
 #include "reginfo.h"
 #include <QJsonArray>
+#include <QDebug>
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -12,12 +13,30 @@
 #include "shunting-yard.h"
 #include "common.h"
 #include <QRegExp>
+#include <QFile>
+#include <QIODevice>
+#include <QMessageBox>
+#include <QByteArray>
+#include <QJsonParseError>
+#include <QJsonDocument>
 
 
 RegInfo::RegInfo(QWidget *parent, QJsonObject obj, Bits * bits): QWidget(parent)
 {
     this->reg_data_obj = obj;
     this->bits = bits;
+
+    QFile default_value_file("default_values.json");
+    if(!default_value_file.open(QIODevice::ReadOnly))
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Can't open default register value file!");
+        msgBox.exec();
+    }
+    QByteArray ba = default_value_file.readAll();
+    QJsonParseError e;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(ba, &e);
+    reg_default_obj = jsonDoc.object();
 
     mainLayout = new QGridLayout;
     label_head = new QLabel();
@@ -41,10 +60,18 @@ void RegInfo::set_reg_name(QString input_name){
 }
 
 unsigned long long RegInfo::get_reg_value_by_addr(QString reg_addr){
+    bool ok = true;
+    unsigned long long reg_value;
     if (reg_addr == this->address)
         return bits->get_data();
-    else
+    else if (reg_default_obj.contains(reg_addr)){
+        reg_value = QString(reg_default_obj[reg_addr].toString()).toULongLong(&ok,16);
+        qDebug() << "DEFAULE_REG VALUE: " << reg_addr << "-" << reg_value;
+        return reg_value;
+    }
+    else {
         return 0;
+    }
 }
 
 bool reg_addr_has_offset(QString input_str){

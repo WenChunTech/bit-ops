@@ -55,6 +55,7 @@ private:
     QList<QWidget * > widget_field_list;
     QGridLayout *mainLayout;
     QJsonObject reg_data_obj;
+    QJsonObject reg_default_obj;
     FieldGroup get_right_field_group();
     bool is_cond_fit(QStringList cond);
     QString replace_reg_by_value(QString input_str);

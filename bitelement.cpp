@@ -62,6 +62,7 @@ void BitElement::txt_reg_changed(QString input_str){
     QString name_str = input_str.trimmed().toUpper();
     if (name_str == ""){
         this->txt_reg_name->setStyleSheet("");
+        reg_display->clear_display();
         return;
     }
     bool is_reg_name = reg_display->is_reg_name(name_str);
@@ -74,8 +75,6 @@ void BitElement::txt_reg_changed(QString input_str){
         reg_display->clear_display();
         this->txt_reg_name->setStyleSheet("QLineEdit { background-color: #FF8888 }");
     }
-
-
 }
 
 void BitElement::send_cmd(){
