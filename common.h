@@ -1,6 +1,10 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#define HELP_FILE "help.pdf"
+#define REG_DATA_FILE "data/reg_data_armv8.json"
+#define DEFAULT_VALUE_FILE "data/default_values.json"
+#define FONT_FILE "data/CALIST.TTF"
 class QString;
 
 /* convert hex num in str to dec format

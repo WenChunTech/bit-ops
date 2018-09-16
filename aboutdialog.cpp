@@ -1,6 +1,7 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 #include <QDesktopServices>
+#include "common.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),
@@ -22,5 +23,5 @@ void AboutDialog::click_url_link(const QUrl &url){
 }
 
 void AboutDialog::help_click(){
-    QDesktopServices::openUrl(QUrl("help.pdf"));
+    QDesktopServices::openUrl(QUrl(HELP_FILE));
 }

@@ -1,3 +1,4 @@
+#include "common.h"
 #include "regdisplay.h"
 #include <QLineEdit>
 #include <QLabel>
@@ -13,7 +14,7 @@
 
 RegDisplay::RegDisplay(QWidget *parent, Bits *bits) : QWidget(parent)
 {
-    QFile file("reg_data_armv8.json");
+    QFile file(REG_DATA_FILE);
     if(!file.open(QIODevice::ReadOnly))
     {
         QMessageBox msgBox;

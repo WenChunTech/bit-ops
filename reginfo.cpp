@@ -26,7 +26,7 @@ RegInfo::RegInfo(QWidget *parent, QJsonObject obj, Bits * bits): QWidget(parent)
     this->reg_data_obj = obj;
     this->bits = bits;
 
-    QFile default_value_file("default_values.json");
+    QFile default_value_file(DEFAULT_VALUE_FILE);
     if(!default_value_file.open(QIODevice::ReadOnly))
     {
         QMessageBox msgBox;
@@ -246,8 +246,8 @@ QString FieldInfo::get_field_string(){
         return QString("Reserved");
     }
 }
-#define BASE_HEIGHT 20
-#define ITEM_HEIGHT 20
+#define BASE_HEIGHT 22
+#define ITEM_HEIGHT 22
 int calc_height(int item_num){
     return BASE_HEIGHT+((item_num-1)/2+1)*ITEM_HEIGHT;
 }
@@ -296,11 +296,18 @@ QWidget * FieldInfo::build(){
     QWidget * result_widget = new QWidget();
     QHBoxLayout * main_layout = new QHBoxLayout();
     QLabel * label_field_name = new QLabel("<b>" + this->field_name + "</b>");
-    QLabel * label_bit_info = new QLabel("["+QString::number(this->start_bit)+":"+\
-                                         QString::number(this->end_bit)+"]");
     QLabel * label_value = new QLabel();
+    QLabel * label_bit_info = new QLabel();
+    if (this->start_bit == this->end_bit) {
+       label_bit_info->setText("[" + QString::number(this->start_bit)+ "]");
+    }
+    else{
+       label_bit_info->setText( "["+QString::number(this->start_bit)+":"+\
+                                         QString::number(this->end_bit)+"]");
+    }
+
     label_field_name->setToolTip("<b>" + this->field_name + "</b>" + ": " +this->field_full_name);
-    label_field_name->setFixedWidth(50);
+    label_field_name->setFixedWidth(70);
     label_bit_info->setFixedWidth(60);
 
     label_value->setText(get_field_string());
