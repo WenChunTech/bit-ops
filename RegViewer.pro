@@ -38,6 +38,11 @@ SOURCES += \
     reginfo.cpp \
     regdisplay.cpp \
     aboutdialog.cpp \
+    third_part/cparse/builtin-features.cpp \
+    third_part/cparse/containers.cpp \
+    third_part/cparse/functions.cpp \
+    third_part/cparse/packToken.cpp \
+    third_part/cparse/shunting-yard.cpp \
     varsdisplay.cpp \
     lineeditfocus.cpp
 
@@ -50,15 +55,18 @@ HEADERS += \
     bitlineedits.h \
     bitoperate.h \
     bitoptions.h \
-    include/containers.h \
-    include/functions.h \
-    include/packToken.h \
-    include/shunting-yard.h \
-    include/shunting-yard-exceptions.h \
     common.h \
     regdisplay.h \
     reginfo.h \
     aboutdialog.h \
+    third_part/cparse/builtin-features.inc \
+    third_part/cparse/builtin-features/functions.inc \
+    third_part/cparse/builtin-features/operations.inc \
+    third_part/cparse/containers.h \
+    third_part/cparse/functions.h \
+    third_part/cparse/packToken.h \
+    third_part/cparse/shunting-yard-exceptions.h \
+    third_part/cparse/shunting-yard.h \
     varsdisplay.h \
     lineeditfocus.h
 
@@ -66,11 +74,10 @@ FORMS += \
     aboutdialog.ui
 
 
+INCLUDEPATH += $$PWD/third_part/cparse
+#DEPENDPATH += $$PWD/include
 
-win32: LIBS += -L$$PWD/lib/ -lcparse
+DISTFILES += \
+    third_part/cparse/builtin-features/reservedWords.inc \
+    third_part/cparse/builtin-features/typeSpecificFunctions.inc
 
-INCLUDEPATH += $$PWD/include
-DEPENDPATH += $$PWD/include
-
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/lib/cparse.lib
-else:win32-g++: PRE_TARGETDEPS += $$PWD/lib/libcparse.a
