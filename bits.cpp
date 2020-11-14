@@ -189,7 +189,10 @@ string Bits::get_oct_string(){
 }
 
 string Bits::get_bin_string(){
-    return bit_data.to_string().substr(BIT_MAX_LENGTH-width);
+    string bit_str = bit_data.to_string().substr(BIT_MAX_LENGTH-width);
+    size_t found = bit_str.find_first_not_of("0");
+    bit_str.erase(0, std::min(found, bit_str.size()-1));
+    return bit_str;
 }
 
 uint64_t Bits::get_data(){
