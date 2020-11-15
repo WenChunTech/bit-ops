@@ -21,7 +21,7 @@ BitOperate::BitOperate(QWidget *parent, Bits *bits) : QWidget(parent)
     mainLayout->setSpacing(0);
 
 /*********** set *********************************/
-    QGroupBox * group_set =  new QGroupBox("Set Value");
+    QGroupBox * group_set =  new QGroupBox("Bit Modify");
     QHBoxLayout * set_layout = new QHBoxLayout;
     set_layout->setMargin(0);
     set_layout->setSpacing(0);
