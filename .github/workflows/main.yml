@@ -1,4 +1,4 @@
-name: cross-release
+name: RegViewer build
 on:
     workflow_dispatch:
     push:
@@ -13,9 +13,9 @@ jobs:
     strategy:
       matrix:
         include:
-          # - name: macos-x86_64-gnu
-          #   runner: macos-latest
-          #   target: x86_64-apple-darwin
+          - name: macos-x86_64-gnu
+            runner: macos-latest
+            target: x86_64-apple-darwin
           - name: macos-aarch64-gnu
             runner: macos-latest
             target: aarch64-apple-darwin
@@ -27,40 +27,28 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
 
+      - name: view files before
+        run: |
+          ls
+
       - name: Build Binary
         env:
           SCCACHE_GHA_ENABLED: "true"
           RUSTC_WRAPPER: "sccache"
         run: |
-          pwd
-          ls
-          clang --version
           qmake
           make
-          ls */*
-    # - name: Release Binary
-    #   shell: bash
-    #   run: |
-    #     BIN_SUFFIX=""
-    #     if [[ "${{ matrix.runner }}" == "windows-latest" ]]; then
-    #       BIN_SUFFIX=".exe"
-    #     fi
-    #     ls target/*
-    #     # The built binary output location
-    #     BIN_OUTPUT="target/${{ matrix.target }}/release/${PROJECT_NAME}${BIN_SUFFIX}"
 
-    #     # Define a better name for the final binary
-    #     BIN_RELEASE="${PROJECT_NAME}-${{ matrix.name }}${BIN_SUFFIX}"
-    #     BIN_RELEASE_VERSIONED="${PROJECT_NAME}-${{ github.ref_name }}-${{ matrix.name }}${BIN_SUFFIX}"
-    #     tar -zcf "${PROJECT_NAME}.tar.gz" "${BIN_OUTPUT}"
+      - name: view files after
+        run: |
+          ls
+          echo "tar file-----------------------"
+          tar -zcvf RegViewer.app.tar.gz RegViewer.app
 
-    #     # Move the built binary where you want it
-    #     # mv "${BIN_OUTPUT}" "./<your-destination>/${BIN_RELEASE}"
-
-    # - name : upload binary
-    #   uses: actions/upload-artifact@master
-    #   if: always()
-    #   with:
-    #     name: ${PROJECT_NAME}-${{ matrix.name }}.tar.gz
-    #     path: ./*.tar.gz
+      - name : upload binary
+        uses: actions/upload-artifact@master
+        if: always()
+        with:
+          name: RegViewer.app.tar.gz
+          path: ./*.tar.gz
     
